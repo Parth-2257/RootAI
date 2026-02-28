@@ -82,30 +82,24 @@ The objective is to convert sensor data into meaningful agricultural intelligenc
 
 ## Solution Overview
 
-RootAI is a full-stack web application that ingests soil sensor data exported as CSV files, processes it through a rule-based analysis engine, and presents meaningful agricultural intelligence through an interactive dashboard. Users can select a field, view soil health trends over time, receive threshold-based alerts, and get planting window recommendations — all without requiring a trained ML model or laboratory input.
+RootAI is a full-stack web application that ingests soil sensor data exported as CSV files and processes it through a rule-based analysis engine. It presents meaningful agricultural intelligence through an interactive dashboard. Users can select a field, view soil health trends over time, receive threshold-based alerts, and get planting window recommendations — no laboratory input or machine learning required.
 
 ---
 
 ## Key Features
 
-### Core (Built)
-
 - **Multi-Field Data Support** — Dropdown-based field selection to load and analyze sensor logs per field
-- **Soil Health Score (0–100)** — Rule-based scoring engine that evaluates soil parameters and outputs a normalized health score
+- **Soil Health Score (0–100)** — Rule-based scoring algorithm that evaluates soil parameters and outputs a normalized health score
 - **Trend Visualization** — Per-field time-series charts for pH, moisture, nitrogen, temperature, and other parameters
 - **Smart Alerts** — Threshold-based and trend-based alerts that flag anomalies and avoid false positives
 - **Planting Window Recommendation** — Actionable recommendations on optimal planting periods based on current soil conditions
-
-### Optional (If Time Permits)
-
-- **Soil Stability Index** — Composite metric reflecting the consistency and reliability of soil conditions over time
 
 ---
 
 ## System Architecture
 
 ```
-Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based Engine --> Frontend Dashboard
+Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm --> Frontend Dashboard
 ```
 
 ### Components
@@ -141,7 +135,7 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based Engine -->
 | Frontend | HTML, CSS, JavaScript |
 | Backend | Node.js, Express.js |
 | Data Parsing | csv-parser (Node.js library) |
-| Rule Engine | Custom JavaScript logic |
+| Rule algorithm | Custom JavaScript logic |
 | Database | MongoDB |
 | Deployment | AWS / Render / Vercel *(to be finalized)* |
 
@@ -162,94 +156,14 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based Engine -->
 
 ---
 
-## API Documentation
-
-> Full API documentation to be completed.
-
-**Base URL:** `http://localhost:5000/api`
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/upload` | Upload CSV sensor log for a field |
-| GET | `/fields` | List all available fields |
-| GET | `/field/:id/score` | Get soil health score for a field |
-| GET | `/field/:id/trends` | Get trend data for a field |
-| GET | `/field/:id/alerts` | Get active alerts for a field |
-| GET | `/field/:id/planting` | Get planting window recommendation |
-
-**Sample CSV Format:**
-
-```
-timestamp,field_id,ph,moisture,nitrogen,phosphorus,potassium,temperature
-2024-01-01 08:00,field_1,6.5,42,90,38,45,23.5
-2024-01-01 12:00,field_1,6.3,39,88,37,44,25.1
-```
-
-**Sample Response — Soil Health Score:**
-
-```json
-{
-  "field_id": "field_1",
-  "score": 74,
-  "status": "Moderate",
-  "evaluated_at": "2024-01-01T12:00:00Z"
-}
-```
-
----
-
-## Module-wise Development
-
-### Checkpoint 1: Research & Planning
-- Problem statement finalization
-- Architecture planning
-- CSV schema design
-- Threshold and scoring rule definition
-- Git repository setup
-
-### Checkpoint 2: Backend Development
-- REST API creation with Express.js
-- CSV parsing and ingestion pipeline
-- MongoDB integration
-- Rule-based scoring and alert engine
-- Unit testing
-
-### Checkpoint 3: Frontend Development
-- Responsive dashboard UI
-- Field selection dropdown
-- Trend visualization charts
-- Health score display
-- Alert and planting window panels
-- API integration
-
-### Checkpoint 4: CSV Integration & Rule Engine
-- Multi-field CSV support
-- Health score computation logic
-- Threshold breach detection
-- Trend-based alert logic (avoiding false positives)
-- Planting window calculation rules
-
-### Checkpoint 5: End-to-End Validation
-- Full pipeline testing (CSV to dashboard)
-- Alert accuracy verification
-- Score consistency checks
-- Cross-field data isolation testing
-
-### Checkpoint 6: Deployment
-- Backend hosting
-- Frontend hosting
-- Public live link
-- Final system testing
-
----
 
 ## Team
 
 | Member | Role | Responsibilities |
 |---|---|---|
-| Member 1 | Backend & Integration | API development, CSV ingestion pipeline, database management |
-| Member 2 | Data & Logic Engineer | Rule engine, scoring logic, alert thresholds, planting window logic |
-| Member 3 | Frontend Developer | UI/UX design, trend charts, dashboard, API integration |
+| Parth Nayak | Backend & System Architect |	API development, business logic integration, database schema design, server setup, deployment
+| Aditya Singh Shekhawat | Algorithm & Logic Engineer | Soil health scoring formulas planting window|rule-based crop recommendation engine 
+| Anuj Raghuwanshi | Frontend Developer | UI/UX design, trend charts, dashboard, API integration |
 
 ---
 
@@ -261,23 +175,22 @@ The following features are planned for future expansion beyond the current build
 - Yield Correlation Analysis
 - PDF Export Reports
 - AI-Powered Plain English Insights
-- Weather Correlation Engine
+- Weather Correlation algorithm
 - SMS / WhatsApp Alerts
 - Predictive Soil Forecasting
 - Mobile application development
-- Satellite imagery integration
 - Government-level agricultural analytics dashboard
 
 ---
 
 ## Known Limitations
 
-- No live sensor connection; data must be manually exported to CSV
-- Rule-based scoring may not generalize across all soil types and regions
-- Limited regional threshold calibration
-- Internet connection required
-- No user authentication in the current build
-
+No real-time sensor integration → Users must manually enter soil values.
+Rule-based logic limitation → Fixed formulas may not work perfectly for every region or soil type.
+Fixed thresholds → Nutrient ranges are static, not dynamically optimized.
+Internet required → Cannot work offline.
+- No authentication → Anyone can access and use it.
+- No yield prediction → You recommend crops but don’t estimate production output.
 ---
 
 ## Impact
@@ -293,7 +206,3 @@ RootAI converts raw sensor logs into meaningful agricultural intelligence by:
 RootAI aims to make smart farming accessible, affordable, and scalable.
 
 ---
-
-## License
-
-This project is developed as part of a hackathon. License details to be added.
