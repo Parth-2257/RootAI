@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RootAI — Assistant Chat</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg: #ffffff;
+            --surface: #f9f9f9;
+            --border: #e0e0e0;
+            --primary: #2d6a4f;
+            --accent: #52b788;
+            --text: #1b1b1b;
+            --text-dim: #4a4a4a;
+            --critical: #dc2626;
+            --warning: #d97706;
+            --good: #16a34a;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --primary-bg: rgba(45, 106, 79, 0.15);
+        }
+
+        body.dark {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --surface2: #1f1f1f;
+            --border: #2a2a2a;
+            --primary: #4ade80;
+            --accent: #4ade80;
+            --text: #ffffff;
+            --text-dim: #b3b3b3;
+            --critical: #f87171;
+            --warning: #fbbf24;
+            --good: #4ade80;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --primary-bg: rgba(74, 222, 128, 0.15);
+        }
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 0.4s ease-out forwards;
+            font-size: 15px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background-color: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .navbar .logo {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .btn-back-nav {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--border);
+        }
+
+        /* Page Wrapper */
+        .page-wrapper {
+            padding-top: 80px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-left: 24px;
+            padding-right: 24px;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            text-align: center;
+            padding: 24px 0 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+
+        /* CHAT AREA */
+        .chat-area {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 420px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Bot Message Style */
+        .msg-bot {
+            align-self: flex-start;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bot-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .bot-icon i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .bot-bubble {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0px 12px 12px 12px;
+            padding: 12px 16px;
+            max-width: 75%;
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Farmer Message Style */
+        .msg-farmer {
+            align-self: flex-end;
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .farmer-bubble {
+            background: var(--primary);
+            border-radius: 12px 0px 12px 12px;
+            padding: 12px 16px;
+            max-width: 75%;
+            font-size: 15px;
+            color: white;
+            line-height: 1.6;
+        }
+
+        body.dark .farmer-bubble {
+            color: #121212;
+        }
+
+        /* Typing Indicator */
+        .typing-bubble {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0px 12px 12px 12px;
+            height: 48px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-dim);
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* QUICK QUESTIONS */
+        .qq-section {
+            margin-top: 16px;
+            margin-bottom: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .qq-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+
+        .qq-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .qq-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .qq-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* INPUT AREA */
+        .input-area {
+            position: sticky;
+            bottom: 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 16px 0 24px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+            z-index: 10;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        body.dark .send-btn {
+            color: #121212;
+        }
+
+        .send-btn:hover {
+            background: var(--accent);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 13px;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-wrapper {
+                max-width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .chat-area {
+                min-height: 350px;
+            }
+
+            .qq-btn {
+                flex: 1 1 calc(50% - 10px);
+                text-align: center;
+            }
+
+            .input-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .send-btn {
+                width: 100%;
+            }
+
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .btn-back-nav {
+                font-size: 13px;
+            }
+
+            .btn-back-full {
+                display: none;
+            }
+
+            .btn-back-short {
+                display: inline;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .btn-back-full {
+                display: inline;
+            }
+
+            .btn-back-short {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <button class="btn-back-nav" id="back-btn" title="Back to Dashboard">
+                <span class="btn-back-full">← Back to Dashboard</span>
+                <span class="btn-back-short">← Back</span>
+            </button>
+            <div class="logo">RootAI</div>
+        </div>
+
+        <div class="navbar-right">
+            <button class="nav-btn" id="theme-toggle" title="Toggle Theme">
+                <i class="fa-solid fa-sun" id="theme-icon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- PAGE WRAPPER -->
+    <main class="page-wrapper">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <div class="page-title">RootAI Assistant</div>
+            <div class="page-subtitle">Ask me anything about your soil — if I do this what will happen to my soil</div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div class="chat-area" id="chat-area">
+            <!-- Initial bot message added via JS -->
+        </div>
+
+        <!-- QUICK QUESTIONS -->
+        <div class="qq-section" id="qq-section">
+            <div class="qq-label">Quick Questions</div>
+            <div class="qq-row">
+                <button class="qq-btn">What if I add nitrogen?</button>
+                <button class="qq-btn">What if I add potassium?</button>
+                <button class="qq-btn">What if it rains heavily?</button>
+                <button class="qq-btn">How do I fix my soil pH?</button>
+                <button class="qq-btn">When should I plant?</button>
+                <button class="qq-btn">What crops suit my soil?</button>
+            </div>
+        </div>
+
+        <!-- INPUT AREA -->
+        <div class="input-area">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type your question here...">
+            <button class="send-btn" id="send-btn">Send &rarr;</button>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            RootAI — Soil Health Dashboard | Hackathon Build 2024
+        </footer>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const backBtn = document.getElementById('back-btn');
+            const chatArea = document.getElementById('chat-area');
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+            const qqSection = document.getElementById('qq-section');
+            const qqBtns = document.querySelectorAll('.qq-btn');
+
+            let isTyping = false; // Flag to stop sending when bot is typing
+
+            // 1. Theme Logic on load
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark');
+            }
+
+            function updateThemeIcon() {
+                if (body.classList.contains('dark')) {
+                    themeIcon.className = 'fa-solid fa-moon';
+                } else {
+                    themeIcon.className = 'fa-solid fa-sun';
+                }
+            }
+            updateThemeIcon();
+
+            // Check sessionStorage
+            let uploadedFile = sessionStorage.getItem('uploadedFile');
+            // If empty do NOT redirect — just continue loading the page normally
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark');
+                const isDark = body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+
+            // Back button
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+
+            // Soil context data
+            const soilData = {
+                score: 61,
+                ph: 5.2,
+                moisture: 71,
+                nitrogen: 48,
+                phosphorus: 55,
+                potassium: 38,
+                temperature: 34
+            };
+
+            // Messages Handlers
+            function appendBotMessage(text) {
+                const msgWrap = document.createElement('div');
+                msgWrap.className = 'msg-bot';
+
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bot-icon';
+                iconDiv.innerHTML = '<i class="fa-solid fa-robot"></i>';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'bot-bubble';
+                bubble.innerText = text;
+
+                msgWrap.appendChild(iconDiv);
+                msgWrap.appendChild(bubble);
+                chatArea.appendChild(msgWrap);
+                scrollToBottom();
+            }
+
+            function appendFarmerMessage(text) {
+                const msgWrap = document.createElement('div');
+                msgWrap.className = 'msg-farmer';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'farmer-bubble';
+                bubble.innerText = text;
+
+                msgWrap.appendChild(bubble);
+                chatArea.appendChild(msgWrap);
+                scrollToBottom();
+            }
+
+            function showTypingIndicator() {
+                const msgWrap = document.createElement('div');
+                msgWrap.className = 'msg-bot';
+                msgWrap.id = 'typing-indicator-wrap';
+
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bot-icon';
+                iconDiv.innerHTML = '<i class="fa-solid fa-robot"></i>';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'typing-bubble';
+                bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+                msgWrap.appendChild(iconDiv);
+                msgWrap.appendChild(bubble);
+                chatArea.appendChild(msgWrap);
+                scrollToBottom();
+            }
+
+            function hideTypingIndicator() {
+                const indicator = document.getElementById('typing-indicator-wrap');
+                if (indicator) {
+                    indicator.remove();
+                }
+            }
+
+            function scrollToBottom() {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+
+            // Initial Bot Message
+            setTimeout(() => {
+                appendBotMessage("Hi! I am RootAI Assistant. I can help you understand your soil and tell you what will happen if you make changes to it. You can ask me things like — what if I add nitrogen, when should I plant, or how do I fix my pH.\nAsk me anything.");
+            }, 500);
+
+            function sendMessage() {
+                if (isTyping) return;
+                const text = chatInput.value.trim();
+                if (!text) return;
+
+                // 3. Add farmer message
+                appendFarmerMessage(text);
+
+                // 4. Clear input field
+                chatInput.value = '';
+
+                // 5. Hide quick questions
+                if (qqSection.style.display !== 'none') {
+                    qqSection.style.opacity = '0';
+                    setTimeout(() => qqSection.style.display = 'none', 300);
+                }
+
+                // 6. Show typing
+                isTyping = true;
+                showTypingIndicator();
+
+                // 7. Bot response after 1500ms
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    isTyping = false;
+                    generateBotResponse(text.toLowerCase());
+                }, 1500);
+            }
+
+            function generateBotResponse(inputRaw) {
+                const text = inputRaw.toLowerCase();
+                let response = "";
+
+                if (text.includes("nitrogen") || text.includes("urea")) {
+                    response = "Your current nitrogen level is 48 mg/kg which is below the minimum threshold of 50 mg/kg. Adding urea fertilizer at 100 to 120 kg per hectare will bring it back to the optimal range of 50 to 80 mg/kg. This will improve your soil health score from 61 to approximately 70 and help restore healthy crop growth within 2 to 3 weeks.";
+                }
+                else if (text.includes("potassium") || text.includes("potash")) {
+                    response = "Your current potassium level is 38 mg/kg which is slightly below the optimal range of 40 to 60 mg/kg. Adding muriate of potash at 60 to 80 kg per hectare will bring it to optimal levels. This will strengthen your crop disease resistance and improve your soil health score from 61 to approximately 68.";
+                }
+                else if (text.includes("ph") || text.includes("lime") || text.includes("acid")) {
+                    response = "Your soil pH is critically low at 5.2. The safe range is 5.5 to 7.5. Applying agricultural lime at 2 to 3 tonnes per hectare will raise your pH back to the safe range within 2 to 4 weeks. This is your most urgent action as low pH prevents your soil from absorbing any nutrients properly.";
+                }
+                else if (text.includes("rain") || text.includes("water") || text.includes("moisture")) {
+                    response = "Your soil moisture is already at 71% which is close to the danger limit of 75%. Heavy rain will push it above 85% causing waterlogging and root rot. Clear all drainage channels immediately before any rain arrives. Do not apply any fertilizer during rain as it will wash away completely.";
+                }
+                else if (text.includes("plant") || text.includes("planting") || text.includes("sow")) {
+                    response = "Based on your current soil condition planting is not recommended right now. Your pH is critically low at 5.2 and nitrogen is below minimum threshold. After treating your soil with lime and urea the planting window is expected to open in 4 to 6 weeks. At that point suitable crops will be Wheat, Maize, and Barley.";
+                }
+                else if (text.includes("crop") || text.includes("crops") || text.includes("grow")) {
+                    response = "Based on your current soil parameters the most suitable crops after treatment will be Wheat, Maize, and Barley. These crops perform well in your phosphorus and potassium range. However you must first fix your pH and nitrogen levels before planting for best results.";
+                }
+                else if (text.includes("temperature") || text.includes("heat") || text.includes("mulch")) {
+                    response = "Your soil temperature is at 34°C which is near the critical limit of 35°C. If it crosses 35°C root systems and germination will be damaged. Apply a mulch layer of 5 to 7 cm on the soil surface to reduce heat absorption. Check temperature every 2 days and act immediately if it crosses 35°C.";
+                }
+                else if (text.includes("score") || text.includes("health")) {
+                    response = "Your current soil health score is 61 out of 100 which is in the Moderate range. The main issues pulling your score down are critically low pH at 5.2 and low nitrogen at 48 mg/kg. Fixing these two issues alone will bring your score up to approximately 78 which is in the Good range.";
+                }
+                else {
+                    response = "That is a good question. Based on your current soil health score of 61 your most urgent actions are to fix your pH and restore nitrogen levels. You can ask me about nitrogen, potassium, pH, moisture, temperature, planting windows, or which crops suit your soil.";
+                }
+
+                appendBotMessage(response);
+            }
+
+            // Listeners
+            sendBtn.addEventListener('click', sendMessage);
+
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            qqBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    chatInput.value = btn.innerText;
+                    sendMessage();
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>
