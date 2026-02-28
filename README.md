@@ -162,7 +162,7 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm 
 | Member | Role | Responsibilities |
 |---|---|---|
 | Parth Nayak | Backend & System Architect |	API development, business logic integration, database schema design, server setup, deployment
-| Aditya Singh Shekhawat | Algorithm & Logic Engineer | Soil health scoring formulas planting window|rule-based crop recommendation engine 
+| Aditya Singh Shekhawat | Algorithm & Logic Engineer | Soil health scoring, formulas, planting window|rule-based crop recommendation algorithm 
 | Anuj Raghuwanshi | Frontend Developer | UI/UX design, trend charts, dashboard, API integration |
 
 ---
@@ -185,10 +185,10 @@ The following features are planned for future expansion beyond the current build
 
 ## Known Limitations
 
-No real-time sensor integration → Users must manually enter soil values.
-Rule-based logic limitation → Fixed formulas may not work perfectly for every region or soil type.
-Fixed thresholds → Nutrient ranges are static, not dynamically optimized.
-Internet required → Cannot work offline.
+- No real-time sensor integration → Users must manually enter soil values.
+- Rule-based logic limitation → Fixed formulas may not work perfectly for every region or soil type.
+- Fixed thresholds → Nutrient ranges are static, not dynamically optimized.
+- Internet required → Cannot work offline.
 - No authentication → Anyone can access and use it.
 - No yield prediction → You recommend crops but don’t estimate production output.
 ---
