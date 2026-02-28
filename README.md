@@ -1,359 +1,255 @@
+# 🌱 RootAI — AI-Driven Soil Health Analysis & Smart Crop Recommendation
 
-RootAI – Intelligent Soil Health & Crop Recommendation System
+> An AI-powered web system that analyzes soil parameters to predict soil health and recommend the most suitable crops for maximum yield.
 
-An AI-powered web system that analyzes soil parameters to predict soil health and recommend the most suitable crops for maximum yield.
+---
 
-1. Problem Statement
+## 📌 Table of Contents
 
-AI-Driven Soil Health Analysis & Smart Crop Recommendation
+- [Problem Statement](#problem-statement)
+- [Solution Overview](#solution-overview)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [End-to-End Workflow](#end-to-end-workflow)
+- [API Documentation](#api-documentation)
+- [Module-wise Development](#module-wise-development)
+- [Team](#team)
+- [Future Scope](#future-scope)
+- [Known Limitations](#known-limitations)
+- [Impact](#impact)
 
+---
 
-Agriculture productivity heavily depends on soil quality. However, most farmers do not have access to affordable and real-time soil analysis systems. Traditional soil testing methods are costly, time-consuming, and require laboratory infrastructure. Due to this, crop decisions are often made based on assumptions instead of scientific soil data, resulting in low yield, soil degradation, and economic losses.
+## 🚜 Problem Statement
 
-RootAI aims to bridge this gap by providing an AI-powered soil health prediction and crop recommendation system accessible through a simple web interface.
+Agriculture productivity heavily depends on soil quality. However, most farmers lack access to affordable, real-time soil analysis systems. Traditional soil testing is costly, time-consuming, and requires laboratory infrastructure — leading to crop decisions based on assumptions rather than data. This results in:
 
-Target Users
+- Low crop yield
+- Soil degradation
+- Economic losses for farmers
 
-Farmers
+**RootAI** bridges this gap with an accessible, AI-powered soil health prediction and crop recommendation system.
 
-Agricultural consultants
+### 🎯 Target Users
 
-Agri-tech startups
+| User Type | Description |
+|---|---|
+| Farmers | Primary beneficiaries for on-ground decision-making |
+| Agricultural Consultants | Data-backed advisory services |
+| Agri-tech Startups | Integration into existing platforms |
+| Government Departments | Policy and analytics support |
+| NGOs | Rural farming outreach programs |
 
-Government agricultural departments
+---
 
-NGOs working in rural farming
+## 💡 Solution Overview
 
-Existing Gaps
+RootAI is a full-stack AI-based web application. Users input soil parameters through the frontend; the backend processes the input and passes it to a trained ML model that predicts:
 
-Expensive laboratory soil testing
+- **Soil health classification**
+- **Recommended crops for maximum yield**
 
-Lack of instant soil analysis tools
+Results are displayed instantly and optionally stored for analytics.
 
-No centralized AI-based crop recommendation system
+---
 
-Limited accessibility of digital agricultural tools in rural areas
+## ✨ Key Features
 
-Poor awareness about soil nutrient balance (NPK, pH, etc.)
+- 🧪 Soil health classification
+- 🌾 Intelligent crop recommendation
+- ⚡ Real-time prediction
+- 🖥️ Clean, user-friendly UI
+- 📊 Prediction history storage
+- 🔌 Scalable backend design
+- 📡 Future-ready IoT integration capability
 
-2. Problem Understanding & Approach
-Root Cause Analysis
+---
 
-Farmers lack scientific data about soil nutrients.
+## 🏗️ System Architecture
 
-Crop selection is often based on tradition rather than soil suitability.
-
-Soil degradation due to repeated monocropping.
-
-Absence of affordable predictive systems.
-
-Limited use of AI in grassroots agriculture.
-
-Solution Strategy
-
-Use soil parameters such as Nitrogen (N), Phosphorus (P), Potassium (K), pH, moisture, temperature, etc.
-
-Train supervised machine learning models on agricultural datasets.
-
-Predict soil health condition.
-
-Recommend the most suitable crop based on soil composition.
-
-Build a lightweight web-based system for easy accessibility.
-
-Ensure scalability for future IoT sensor integration.
-
-3. Proposed Solution
-Solution Overview
-
-RootAI is a full-stack AI-based web application. Users input soil parameters through the frontend. The backend processes the input and passes it to a trained ML model. The model predicts:
-
-Soil health classification
-
-Recommended crops
-
-The results are then displayed instantly to the user and optionally stored for analytics.
-
-Core Idea
-
-Leverage supervised machine learning to map soil nutrient composition to optimal crop selection using trained predictive models.
-
-Key Features
-
-Soil health classification
-
-Intelligent crop recommendation
-
-Real-time prediction
-
-Clean and user-friendly UI
-
-Prediction history storage
-
-Scalable backend design
-
-Future-ready IoT integration capability
-
-4. System Architecture
-High-Level Flow
-
+```
 User → Frontend → Backend API → ML Model → Database → Response
+```
+
+### Components
+
+**1. Frontend**
+- Built with HTML, CSS, and JavaScript
+- Collects soil parameters via input forms
+- Sends data to backend via REST API
+- Displays prediction results dynamically
+
+**2. Backend**
+- Built with Node.js and Express.js
+- Handles API requests and input validation
+- Communicates with ML model
+- Stores inputs and predictions in database
+
+**3. ML Model**
+- Developed in Python using Scikit-learn
+- Trained on soil dataset
+- Outputs soil health status and crop recommendation
+
+**4. Database (MongoDB)**
+- Stores user input data
+- Stores prediction results
+- Logs and analytics
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Node.js, Express.js |
+| ML / AI | Python, Scikit-learn |
+| Database | MongoDB |
+| Deployment | AWS / Render / Vercel *(to be finalized)* |
+
+---
+
+## 🔄 End-to-End Workflow
+
+1. User enters soil parameters (N, P, K, pH, moisture, temperature, etc.)
+2. Frontend sends data via `POST` request to backend API
+3. Backend validates the input
+4. Backend forwards input to the ML model
+5. Model generates prediction
+6. Backend stores data in MongoDB
+7. Prediction result is returned to frontend
+8. User views soil health status and recommended crop
+
+---
+
+## 📡 API Documentation
+
+> *Full API documentation to be completed.*
+
+**Base URL:** `http://localhost:5000/api`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/predict` | Submit soil parameters and get prediction |
+| GET | `/history` | Retrieve past predictions |
+
+**Sample Request Body:**
+```json
+{
+  "nitrogen": 90,
+  "phosphorus": 42,
+  "potassium": 43,
+  "ph": 6.5,
+  "moisture": 82,
+  "temperature": 23.5
+}
+```
+
+**Sample Response:**
+```json
+{
+  "soil_health": "Good",
+  "recommended_crop": "Rice",
+  "confidence": 0.91
+}
+```
+
+---
+
+## 📦 Module-wise Development
+
+### Checkpoint 1: Research & Planning
+- Problem statement finalization
+- Literature research
+- Dataset identification
+- Architecture planning
+- Git repository setup
+
+### Checkpoint 2: Backend Development
+- REST API creation
+- Data validation middleware
+- MongoDB integration
+- Prediction endpoint
+- Unit testing
 
-Architecture Description
-1. Frontend
+### Checkpoint 3: Frontend Development
+- Responsive UI
+- Soil input form
+- Result display dashboard
+- API integration
 
-Built using HTML, CSS, and JavaScript
+### Checkpoint 4: Model Training
+- Data preprocessing
+- Feature engineering
+- Model training & evaluation
+- Model serialization (`.pkl` file)
 
-Collects soil parameters through input forms
+### Checkpoint 5: Model Integration
+- Backend-to-model integration
+- Prediction pipeline testing
+- End-to-end validation
 
-Sends data to backend using REST API
+### Checkpoint 6: Deployment
+- Backend & frontend hosting
+- Model deployment
+- Public live link
+- Final system testing
 
-Displays prediction results dynamically
+---
 
-2. Backend
+## 👥 Team
 
-Built using Node.js and Express.js
+| Member | Role | Responsibilities |
+|---|---|---|
+| Member 1 | Backend & Integration | API development, database management, ML integration |
+| Member 2 | ML Engineer | Dataset preprocessing, model training, evaluation |
+| Member 3 | Frontend Developer | UI/UX design, frontend logic, API integration |
 
-Handles API requests
+---
 
-Performs input validation
+## 🚀 Future Scope
 
-Communicates with ML model
+**Short-Term**
+- Fertilizer recommendation system
+- Improved model accuracy with larger datasets
+- Multilingual support
+- User authentication & personal dashboard
 
-Stores user inputs and predictions in database
+**Long-Term**
+- IoT sensor integration for real-time soil monitoring
+- Mobile application development
+- Satellite imagery integration
+- Government-level agricultural analytics dashboard
+- Yield estimation prediction
+- AI-driven climate-adaptive farming suggestions
 
-3. ML Model
+---
 
-Developed in Python using Scikit-learn
+## ⚠️ Known Limitations
 
-Trained on soil dataset
+- Accuracy depends on dataset quality
+- Manual input required (no live sensor data yet)
+- Limited regional dataset coverage
+- Internet connection required
+- Initial model may not generalize globally
 
-Outputs soil health status and crop recommendation
+---
 
-4. Database
+## 🌍 Impact
 
-MongoDB used to store:
+RootAI empowers farmers with data-driven decision-making by:
 
-User input data
+- ✅ Improving crop yield
+- ✅ Reducing soil degradation
+- ✅ Promoting sustainable farming practices
+- ✅ Increasing farmer income
+- ✅ Encouraging AI adoption in agriculture
 
-Prediction results
+> **RootAI aims to make smart farming accessible, affordable, and scalable. 🌱**
 
-Logs and analytics
+---
 
-5. Response Layer
+## 📄 License
 
-Sends structured JSON response back to frontend
-
-Displays results to user
-
-Architecture Diagram
-
-(Add system architecture diagram image here)
-
-5. Database Design
-
-(To be completed later)
-
-6. Dataset Selected
-
-(To be completed later)
-
-7. Model Selected
-
-(To be completed later)
-
-8. Technology Stack
-Frontend
-
-HTML
-
-CSS
-
-JavaScript
-
-Backend
-
-Node.js
-
-Express.js
-
-ML/AI
-
-Python
-
-Scikit-learn
-
-Database
-
-MongoDB
-
-Deployment
-
-Cloud deployment (AWS / Render / Vercel – To be finalized)
-
-9. API Documentation & Testing
-
-(To be completed later)
-
-10. Module-wise Development & Deliverables
-Checkpoint 1: Research & Planning
-
-Deliverables:
-
-Problem statement finalization
-
-Literature research
-
-Dataset identification
-
-Architecture planning
-
-Git repository setup
-
-Checkpoint 2: Backend Development
-
-Deliverables:
-
-REST API creation
-
-Data validation middleware
-
-MongoDB integration
-
-Prediction endpoint creation
-
-Unit testing
-
-Checkpoint 3: Frontend Development
-
-Deliverables:
-
-Responsive UI
-
-Soil input form
-
-Result display dashboard
-
-API integration
-
-Checkpoint 4: Model Training
-
-Deliverables:
-
-Data preprocessing
-
-Feature engineering
-
-Model training
-
-Model evaluation
-
-Model serialization (.pkl file)
-
-Checkpoint 5: Model Integration
-
-Deliverables:
-
-Backend-to-model integration
-
-Prediction pipeline testing
-
-End-to-end validation
-
-Checkpoint 6: Deployment
-
-Deliverables:
-
-Backend hosting
-
-Frontend hosting
-
-Model deployment
-
-Public live link
-
-Final system testing
-
-11. End-to-End Workflow
-
-User enters soil parameters (N, P, K, pH, moisture, etc.).
-
-Frontend sends data via POST request to backend API.
-
-Backend validates the input.
-
-Backend sends input to ML model.
-
-Model generates prediction.
-
-Backend stores data in MongoDB.
-
-Prediction result returned to frontend.
-
-User views soil health status and recommended crop.
-
-12. Demo & Video
-
-(To be completed later)
-
-13. Hackathon Deliverables Summary
-
-(To be completed later)
-
-14. Team Roles & Responsibilities
-Member Name	Role	Responsibilities
-Member 1	Backend & Integration	API development, database management, ML integration
-Member 2	ML Engineer	Dataset preprocessing, model training, evaluation
-Member 3	Frontend Developer	UI/UX design, frontend logic, API integration
-15. Future Scope & Scalability
-Short-Term
-
-Add fertilizer recommendation system
-
-Improve model accuracy with larger datasets
-
-Add multilingual support
-
-Add authentication & dashboard
-
-Long-Term
-
-IoT sensor integration for real-time soil monitoring
-
-Mobile application development
-
-Satellite imagery integration
-
-Government-level agricultural analytics dashboard
-
-Predict yield estimation
-
-AI-driven climate-adaptive farming suggestions
-
-16. Known Limitations
-
-Accuracy depends on dataset quality
-
-Manual input required (no live sensor data yet)
-
-Limited regional dataset coverage
-
-Internet connection required
-
-Initial model may not generalize globally
-
-17. Impact
-
-RootAI empowers farmers with data-driven decision-making.
-
-Improves crop yield
-
-Reduces soil degradation
-
-Promotes sustainable farming
-
-Increases farmer income
-
-Encourages AI adoption in agriculture
-
-RootAI aims to make smart farming accessible, affordable, and scalable. 🌱
+This project is developed as part of a hackathon. License details to be added.
