@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RootAI — Soil Health Dashboard</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="navbar">
+            <div class="logo">RootAI</div>
+        </header>
+    </div>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-heading">Know Your Soil. Grow Better Crops.</h1>
+            <p class="hero-subtext">
+                Upload your soil sensor data and instantly get your soil health score, alerts, and crop recommendations.
+            </p>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-value">0 – 100</div>
+                    <div class="stat-label">Soil Health Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Parameters Tracked</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">Instant</div>
+                    <div class="stat-label">Crop Recommendations</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Card -->
+        <section class="upload-card-container">
+            <div class="upload-card">
+                <label class="input-label">Upload Soil Sensor CSV File</label>
+
+                <div class="upload-area">
+                    <input type="file" id="csv-upload" class="upload-input-file" accept=".csv">
+                    <div class="upload-area-text">Click to choose your CSV file</div>
+                    <div class="filename-display" id="filename-text"></div>
+                </div>
+
+                <button id="btn-submit" class="btn-submit">View My Soil Dashboard</button>
+                <div id="error-message" class="error-msg">Please upload a CSV file first</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer container">
+        RootAI — Soil Health Dashboard | Hackathon Build 2024
+    </footer>
+
+    <script src="js/index.js"></script>
+</body>
+
+</html>
