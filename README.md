@@ -28,45 +28,20 @@ Modern farms increasingly use sensors to monitor soil parameters such as pH, moi
 ### The Problem
 
 There is no structured tool that:
-
 - Ingests time-series soil sensor data
 - Tracks long-term soil health trends
 - Detects threshold breaches
 - Correlates soil parameters with historical yield data
 - Provides actionable planting recommendations
 
-Challenges include:
-
-- Implementing time-series analysis
-- Handling multi-parameter correlation
-- Designing meaningful alert thresholds
-- Avoiding false-positive alerts
-- Raw data without interpretation limits practical value
-
 ### The Consequence
 
 Without analytical dashboards:
-
 - Soil degradation may go unnoticed
 - Planting decisions are poorly timed
 - Yield predictions are inaccurate
 - Resource application becomes reactive
 - Long-term soil health declines
-
-Missed early signals reduce productivity and sustainability.
-
-### The Challenge
-
-Can we build a Soil Health Dashboard that:
-
-- Processes sensor logs from CSV inputs
-- Visualizes trends in soil parameters
-- Detects critical threshold breaches
-- Correlates soil conditions with historical yield
-- Recommends optimal planting windows
-- Provides clear, actionable alerts
-
-The objective is to convert sensor data into meaningful agricultural intelligence.
 
 ### Target Users
 
@@ -90,7 +65,7 @@ RootAI is a full-stack web application that ingests soil sensor data exported as
 
 - **Multi-Field Data Support** — Dropdown-based field selection to load and analyze sensor logs per field
 - **Soil Health Score (0–100)** — Rule-based scoring algorithm that evaluates soil parameters and outputs a normalized health score
-- **Trend Visualization** — Per-field time-series charts for pH, moisture, nitrogen, temperature, and other parameters
+- **Trend Visualization** — Per-field time-series charts for pH, moisture, nitrogen, temperature, and other parameters powered by Chart.js
 - **Smart Alerts** — Threshold-based and trend-based alerts that flag anomalies and avoid false positives
 - **Planting Window Recommendation** — Actionable recommendations on optimal planting periods based on current soil conditions
 
@@ -99,7 +74,7 @@ RootAI is a full-stack web application that ingests soil sensor data exported as
 ## System Architecture
 
 ```
-Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm --> Frontend Dashboard
+Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based Algorithm --> Frontend Dashboard
 ```
 
 ### Components
@@ -107,19 +82,19 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm 
 **1. Frontend**
 - Built with HTML, CSS, and JavaScript
 - Field selection via dropdown
-- Displays trend charts, health score, alerts, and planting recommendations
-- Communicates with backend via REST API
+- Displays trend charts (Chart.js), health score, alerts, and planting recommendations
+- Communicates with backend via REST API using `fetch()`
 
 **2. Backend**
 - Built with Node.js and Express.js
-- Reads and parses CSV files using a CSV parser library
+- Reads and parses CSV files using `csv-parser` library
 - Runs rule-based logic for soil health scoring, alert detection, and planting window calculation
 - Serves structured JSON responses to the frontend
 
 **3. Data Layer (CSV)**
 - Sensor data exported as CSV files
 - Each file represents time-series readings for a field
-- Parameters include: pH, moisture, nitrogen (N), phosphorus (P), potassium (K), temperature
+- Parameters include: pH, Moisture, Nitrogen (N), Phosphorus (P), Potassium (K), Temperature
 
 **4. Database (MongoDB)**
 - Stores parsed sensor records
@@ -133,11 +108,12 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm 
 | Layer | Technology |
 |---|---|
 | Frontend | HTML, CSS, JavaScript |
+| Charts | Chart.js |
 | Backend | Node.js, Express.js |
 | Data Parsing | csv-parser (Node.js library) |
-| Rule algorithm | Custom JavaScript logic |
+| Rule Algorithm | Custom JavaScript logic |
 | Database | MongoDB |
-| Deployment | AWS / Render / Vercel *(to be finalized)* |
+| Deployment | Render / Vercel *(to be finalized)* |
 
 ---
 
@@ -148,49 +124,77 @@ Sensor --> CSV File --> Backend (Node.js + CSV Parser) --> Rule-Based algorithm 
 3. Backend parses and validates the incoming data
 4. Rule-based engine evaluates soil parameters against defined thresholds
 5. Soil health score (0–100) is calculated and classified
-6. Crop recommendation logic runs based on current soil conditions
+6. Planting window recommendation logic runs based on current soil conditions
 7. Results and sensor records are stored in MongoDB
-8. API sends structured response back to the frontend
-9. Dashboard renders health score, alerts, trends, and crop recommendations
+8. API sends structured JSON response back to the frontend
+9. Dashboard renders health score, alerts, trend charts, and planting recommendations
 10. Farmer reviews insights and makes informed planting decisions
 
 ---
 
+## API Documentation
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/upload` | Upload CSV file for a field |
+| GET | `/api/soil-data?field=<fieldId>` | Get parsed sensor data for a field |
+| GET | `/api/health-score?field=<fieldId>` | Get computed soil health score |
+| GET | `/api/alerts?field=<fieldId>` | Get threshold breach alerts |
+| GET | `/api/planting-window?field=<fieldId>` | Get planting window recommendation |
+
+
+
+---
+
+## Module-wise Development
+
+| Module | Status | Owner |
+|---|---|---|
+| CSV Upload & Parsing | ✅ Complete | Parth Nayak |
+| MongoDB Schema & Storage | ✅ Complete | Parth Nayak |
+| REST API Endpoints | ✅ Complete | Parth Nayak |
+| Soil Health Scoring Algorithm | ✅ Complete | Aditya Singh Shekhawat |
+| Threshold Alert Logic | ✅ Complete | Aditya Singh Shekhawat |
+| Planting Window Logic | ✅ Complete | Aditya Singh Shekhawat |
+| Frontend Dashboard UI | ✅ Complete | Anuj Raghuwanshi |
+| Chart.js Trend Visualization | ✅ Complete | Anuj Raghuwanshi |
+| API Integration (Frontend) | ✅ Complete | Anuj Raghuwanshi |
+
+---
 
 ## Team
 
 | Member | Role | Responsibilities |
 |---|---|---|
-| Parth Nayak | Backend & System Architect |	API development, business logic integration, database schema design, server setup, deployment
-| Aditya Singh Shekhawat | Algorithm & Logic Engineer | Soil health scoring, formulas, planting window|rule-based crop recommendation algorithm 
+| Parth Nayak | Backend & System Architect | API development, business logic integration, database schema design, server setup, deployment |
+| Aditya Singh Shekhawat | Algorithm & Logic Engineer | Soil health scoring, formulas, planting window recommendation |
 | Anuj Raghuwanshi | Frontend Developer | UI/UX design, trend charts, dashboard, API integration |
 
 ---
 
 ## Future Scope
 
-The following features are planned for future expansion beyond the current build:
-
 - Multi-Field Comparison Dashboard
 - Yield Correlation Analysis
 - PDF Export Reports
 - AI-Powered Plain English Insights
-- Weather Correlation algorithm
+- Weather Correlation Algorithm
 - SMS / WhatsApp Alerts
 - Predictive Soil Forecasting
-- Mobile application development
-- Government-level agricultural analytics dashboard
+- Mobile Application Development
+- Government-level Agricultural Analytics Dashboard
 
 ---
 
 ## Known Limitations
 
-- No real-time sensor integration → Users must manually enter soil values.
-- Rule-based logic limitation → Fixed formulas may not work perfectly for every region or soil type.
-- Fixed thresholds → Nutrient ranges are static, not dynamically optimized.
-- Internet required → Cannot work offline.
-- No authentication → Anyone can access and use it.
-- No yield prediction → You recommend crops but don’t estimate production output.
+- **No real-time sensor integration** — Users must manually upload CSV files
+- **Rule-based logic** — Fixed formulas may not work perfectly for every region or soil type
+- **Fixed thresholds** — Nutrient ranges are static, not dynamically optimized
+- **Internet required** — Cannot work offline
+- **No authentication** — Anyone with access can use the system
+- **No yield prediction** — Crops are recommended but production output is not estimated
+
 ---
 
 ## Impact
@@ -203,6 +207,6 @@ RootAI converts raw sensor logs into meaningful agricultural intelligence by:
 - Supporting data-driven resource application
 - Promoting sustainable and productive farming practices
 
-RootAI aims to make smart farming accessible, affordable, and scalable.
+> RootAI aims to make smart farming accessible, affordable, and scalable.
 
----
+## Google Drive Link- https://drive.google.com/drive/folders/1eJIq2Egzc5kPN8UB20O6ERdTH86IqRbr

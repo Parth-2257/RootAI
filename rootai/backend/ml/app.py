@@ -1,69 +1,153 @@
-import streamlit as st
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import pickle
 import numpy as np
+import pandas as pd
+import io
 
-# Load the MinMaxScaler and the model
-with open("minmaxscaler.pkl", "rb") as scaler_file:
-    scaler = pickle.load(scaler_file)
+app = FastAPI(title="RootAI Crop Prediction API")
 
-with open("model.pkl", "rb") as model_file:
-    model = pickle.load(model_file)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-# Crop dictionary for mapping model output to crop names
+try:
+    with open("minmaxscaler.pkl", "rb") as scaler_file:
+        scaler = pickle.load(scaler_file)
+    with open("model.pkl", "rb") as model_file:
+        model = pickle.load(model_file)
+    print("Models loaded successfully")
+except Exception as e:
+    print(f"Error loading models: {e}")
+
 crop_dict = {
-    1: 'rice',
-    2: 'maize',
-    3: 'chickpea',
-    4: 'kidneybeans',
-    5: 'pigeonpeas',
-    6: 'mothbeans',
-    7: 'mungbean',
-    8: 'blackgram',
-    9: 'lentil',
-    10: 'pomegranate',
-    11: 'banana',
-    12: 'mango',
-    13: 'grapes',
-    14: 'watermelon',
-    15: 'muskmelon',
-    16: 'apple',
-    17: 'orange',
-    18: 'papaya',
-    19: 'coconut',
-    20: 'cotton',
-    21: 'jute',
-    22: 'coffee'
+    1: 'rice', 2: 'maize', 3: 'chickpea',
+    4: 'kidneybeans', 5: 'pigeonpeas', 6: 'mothbeans',
+    7: 'mungbean', 8: 'blackgram', 9: 'lentil',
+    10: 'pomegranate', 11: 'banana', 12: 'mango',
+    13: 'grapes', 14: 'watermelon', 15: 'muskmelon',
+    16: 'apple', 17: 'orange', 18: 'papaya',
+    19: 'coconut', 20: 'cotton', 21: 'jute', 22: 'coffee'
 }
 
-# Function to make predictions
-def predict_crop(N, P, K, temperature, humidity, ph, rainfall):
-    # Input as a numpy array
-    input_data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
-    
-    # Scale the input
-    scaled_input = scaler.transform(input_data)
-    
-    # Make prediction
-    prediction = model.predict(scaled_input)
-    
-    # Map the numerical prediction to the crop name
-    crop_prediction = crop_dict.get(int(prediction[0]), "Unknown crop")
-    
-    return crop_prediction
+@app.get("/")
+def root():
+    return {"message": "RootAI ML API is running"}
 
-# Streamlit interface
-st.title("Crop Prediction App")
+@app.post("/api/ai/upload-csv")
+async def predict_from_csv(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
 
-# Create input fields
-N = st.number_input("Nitrogen (N)", min_value=0.0, max_value=100.0, step=0.1)
-P = st.number_input("Phosphorus (P)", min_value=0.0, max_value=100.0, step=0.1)
-K = st.number_input("Potassium (K)", min_value=0.0, max_value=100.0, step=0.1)
-temperature = st.number_input("Temperature", min_value=-10.0, max_value=60.0, step=0.1)
-humidity = st.number_input("Humidity", min_value=0.0, max_value=100.0, step=0.1)
-ph = st.number_input("pH Level", min_value=0.0, max_value=14.0, step=0.1)
-rainfall = st.number_input("Rainfall", min_value=0.0, max_value=500.0, step=0.1)
+        df.columns = df.columns.str.strip().str.lower()
 
-# Button to trigger prediction
-if st.button("Predict Crop"):
-    result = predict_crop(N, P, K, temperature, humidity, ph, rainfall)
-    st.success(f'The predicted crop is: {result}')
+        column_mapping = {
+            'n': 'nitrogen',
+            'p': 'phosphorus', 
+            'k': 'potassium',
+            'ph': 'ph',
+            'humidity': 'moisture',
+            'temperature': 'temperature',
+            'rainfall': 'rainfall'
+        }
+        df.rename(columns=column_mapping, inplace=True)
+
+        required_columns = [
+            'nitrogen', 'phosphorus', 'potassium',
+            'temperature', 'moisture', 'ph', 'rainfall'
+        ]
+
+        missing = [col for col in required_columns if col not in df.columns]
+        if missing:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing columns: {missing}"
+            )
+
+        features = df[required_columns].values
+        scaled_features = scaler.transform(features)
+        predictions = model.predict(scaled_features)
+
+        results = []
+        for i, pred in enumerate(predictions):
+            if isinstance(pred, (int, np.integer)):
+                crop_name = crop_dict.get(int(pred), str(pred))
+            else:
+                crop_name = str(pred)
+
+            row_data = df.iloc[i].to_dict()
+            results.append({
+                "row": i + 1,
+                "nitrogen": float(row_data.get('nitrogen', 0)),
+                "phosphorus": float(row_data.get('phosphorus', 0)),
+                "potassium": float(row_data.get('potassium', 0)),
+                "temperature": float(row_data.get('temperature', 0)),
+                "moisture": float(row_data.get('moisture', 0)),
+                "ph": float(row_data.get('ph', 0)),
+                "rainfall": float(row_data.get('rainfall', 0)),
+                "predicted_crop": crop_name
+            })
+
+        crop_counts = {}
+        for r in results:
+            crop = r['predicted_crop']
+            crop_counts[crop] = crop_counts.get(crop, 0) + 1
+
+        most_common_crop = max(crop_counts, key=crop_counts.get)
+
+        avg_values = {
+            "avg_nitrogen": float(df['nitrogen'].mean()),
+            "avg_phosphorus": float(df['phosphorus'].mean()),
+            "avg_potassium": float(df['potassium'].mean()),
+            "avg_temperature": float(df['temperature'].mean()),
+            "avg_moisture": float(df['moisture'].mean()),
+            "avg_ph": float(df['ph'].mean()),
+            "avg_rainfall": float(df['rainfall'].mean())
+        }
+
+        return {
+            "success": True,
+            "total_rows": len(results),
+            "most_recommended_crop": most_common_crop,
+            "crop_distribution": crop_counts,
+            "averages": avg_values,
+            "predictions": results
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ai/predict-single")
+async def predict_single(data: dict):
+    try:
+        input_data = np.array([[
+            data.get('nitrogen', 0),
+            data.get('phosphorus', 0),
+            data.get('potassium', 0),
+            data.get('temperature', 0),
+            data.get('moisture', 0),
+            data.get('ph', 0),
+            data.get('rainfall', 100)
+        ]])
+
+        scaled = scaler.transform(input_data)
+        prediction = model.predict(scaled)
+
+        if isinstance(prediction[0], (int, np.integer)):
+            crop_name = crop_dict.get(int(prediction[0]), str(prediction[0]))
+        else:
+            crop_name = str(prediction[0])
+
+        return {
+            "success": True,
+            "predicted_crop": crop_name
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

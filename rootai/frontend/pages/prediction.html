@@ -357,6 +357,27 @@
             border-color: var(--primary);
         }
 
+        .upload-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: all 0.2s;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .upload-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
         .send-btn {
             background: var(--primary);
             color: white;
@@ -493,6 +514,10 @@
 
         <!-- INPUT AREA -->
         <div class="input-area">
+            <input type="file" id="csv-upload" accept=".csv" style="display: none;">
+            <button class="upload-btn" id="upload-btn" title="Upload CSV Data">
+                <i class="fa-solid fa-paperclip"></i>
+            </button>
             <input type="text" class="chat-input" id="chat-input" placeholder="Type your question here...">
             <button class="send-btn" id="send-btn">Send &rarr;</button>
         </div>
@@ -512,6 +537,8 @@
             const chatArea = document.getElementById('chat-area');
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('send-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            const csvUploadInput = document.getElementById('csv-upload');
             const qqSection = document.getElementById('qq-section');
             const qqBtns = document.querySelectorAll('.qq-btn');
 
@@ -705,6 +732,58 @@
                     chatInput.value = btn.innerText;
                     sendMessage();
                 });
+            });
+
+            uploadBtn.addEventListener('click', () => {
+                csvUploadInput.click();
+            });
+
+            csvUploadInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // 1. Show farmer message
+                appendFarmerMessage(`📄 Uploaded: ${file.name}`);
+
+                // 2. Clear the file input
+                e.target.value = '';
+
+                // 3. Hide quick questions
+                if (qqSection.style.display !== 'none') {
+                    qqSection.style.opacity = '0';
+                    setTimeout(() => qqSection.style.display = 'none', 300);
+                }
+
+                // 4. Show typing
+                isTyping = true;
+                showTypingIndicator();
+
+                // 5. Send file to backend
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch('http://localhost:5000/api/ai/upload-csv', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    hideTypingIndicator();
+                    isTyping = false;
+
+                    if (data.success) {
+                        appendBotMessage(`Based on your dataset, the recommended crop is: ${data.most_recommended_crop}`);
+                    } else {
+                        appendBotMessage(`Error processing CSV: ${data.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    hideTypingIndicator();
+                    isTyping = false;
+                    appendBotMessage(`Connection error: Could not reach the server.`);
+                    console.error("Upload error:", error);
+                }
             });
 
         });

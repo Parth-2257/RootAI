@@ -8,6 +8,7 @@ const path = require("path");
 
 const fieldRoutes = require("./routes/fieldRoutes");
 const sensorRoutes = require("./routes/sensorRoutes");
+const aiRoutes = require("./routes/ai.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ app.get("/api/health", (req, res) => {
 // ─── API Routes ───
 app.use("/api/fields", fieldRoutes);
 app.use("/api/sensor-data", sensorRoutes);
+app.use("/api/ai", aiRoutes);
 
 // ─── Global Error Handler ───
 app.use((err, req, res, next) => {
@@ -49,5 +51,6 @@ app.listen(PORT, () => {
     console.log(`\n🌱  RootAI Backend running on http://localhost:${PORT}`);
     console.log(`📡  Health check:  http://localhost:${PORT}/api/health`);
     console.log(`📂  API Fields:    http://localhost:${PORT}/api/fields`);
-    console.log(`📊  API Sensor:    http://localhost:${PORT}/api/sensor-data\n`);
+    console.log(`📊  API Sensor:    http://localhost:${PORT}/api/sensor-data`);
+    console.log(`🧠  API AI:        http://localhost:${PORT}/api/ai\n`);
 });
